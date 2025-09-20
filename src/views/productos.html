@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Productos</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1> Gestión de Productos</h1>
+            <h1>📦 Gestión de Productos</h1>
             <p class="subtitle">Administrar inventario de productos</p>
             <div style="margin-top: 15px;">
                 <button class="btn btn-secondary" onclick="navigateTo('index')">
-                     Volver al Inicio
+                    ⬅️ Volver al Inicio
                 </button>
             </div>
         </header>
@@ -23,38 +23,51 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
                     <h2>Agregar Nuevo Producto</h2>
                     <button class="btn btn-primary" onclick="showProductForm()">
-                         Nuevo Producto
+                        ➕ Nuevo Producto
                     </button>
                 </div>
 
-                <!-- Formulario de producto -->
+                
                 <div id="productForm" style="display: none;">
                     <form id="addProductForm">
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="nombre">Nombre del Producto *</label>
-                                <input type="text" id="nombre" name="nombre" required>
+                                <input type="text" id="nombre" name="nombre" required placeholder="Ej: Coca Cola 500ml">
                             </div>
                             
                             <div class="form-group">
                                 <label for="precio">Precio *</label>
-                                <input type="number" id="precio" name="precio" step="0.01" min="0" required>
+                                <input type="number" id="precio" name="precio" step="0.01" min="0" required placeholder="0.00">
                             </div>
                             
                             <div class="form-group">
                                 <label for="stock">Stock Inicial</label>
-                                <input type="number" id="stock" name="stock" min="0" value="0">
+                                <input type="number" id="stock" name="stock" min="0" value="0" placeholder="Cantidad inicial">
                             </div>
                             
                             <div class="form-group">
                                 <label for="categoria">Categoría</label>
                                 <select id="categoria" name="categoria">
                                     <option value="">Seleccionar categoría</option>
-                                    <option value="Alimentos">Alimentos</option>
-                                    <option value="Bebidas">Bebidas</option>
-                                    <option value="Limpieza">Limpieza</option>
-                                    <option value="Higiene">Higiene</option>
-                                    <option value="Otros">Otros</option>
+                                    <option value="Alimentos y Bebidas">🍕 Alimentos y Bebidas</option>
+                                    <option value="Bebidas">🥤 Bebidas</option>
+                                    <option value="Lácteos">🥛 Lácteos</option>
+                                    <option value="Panadería">🍞 Panadería</option>
+                                    <option value="Carnes y Embutidos">🥩 Carnes y Embutidos</option>
+                                    <option value="Frutas y Verduras">🍎 Frutas y Verduras</option>
+                                    <option value="Limpieza">🧽 Limpieza</option>
+                                    <option value="Higiene Personal">🧴 Higiene Personal</option>
+                                    <option value="Medicamentos">💊 Medicamentos</option>
+                                    <option value="Electrónicos">📱 Electrónicos</option>
+                                    <option value="Hogar y Decoración">🏠 Hogar y Decoración</option>
+                                    <option value="Ropa y Accesorios">👕 Ropa y Accesorios</option>
+                                    <option value="Juguetes">🧸 Juguetes</option>
+                                    <option value="Papelería">📝 Papelería</option>
+                                    <option value="Ferretería">🔧 Ferretería</option>
+                                    <option value="Mascotas">🐕 Mascotas</option>
+                                    <option value="Cigarrillos">🚬 Cigarrillos</option>
+                                    <option value="Otros">📋 Otros</option>
                                 </select>
                             </div>
                         </div>
@@ -66,7 +79,7 @@
                         
                         <div class="form-group">
                             <label for="codigo_barras">Código de Barras</label>
-                            <input type="text" id="codigo_barras" name="codigo_barras" placeholder="Opcional">
+                            <input type="text" id="codigo_barras" name="codigo_barras" placeholder="Opcional - Código EAN o UPC">
                         </div>
 
                         <div style="display: flex; gap: 10px; margin-top: 20px;">
@@ -74,16 +87,16 @@
                                 <span class="btn-loading" style="display: none;">
                                     <div class="loading"></div>
                                 </span>
-                                <span class="btn-text"> Guardar Producto</span>
+                                <span class="btn-text">💾 Guardar Producto</span>
                             </button>
                             <button type="button" class="btn btn-secondary" onclick="hideProductForm()">
-                                 Cancelar
+                                ❌ Cancelar
                             </button>
                         </div>
                     </form>
                 </div>
 
-                <!-- Filtros y búsqueda -->
+           
                 <div style="margin: 30px 0;">
                     <h2>Lista de Productos</h2>
                     <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;">
@@ -94,22 +107,35 @@
                         
                         <div class="form-group" style="margin: 0;">
                             <select id="filterCategory" onchange="filterProducts()">
-                                <option value="">Todas las categorías</option>
-                                <option value="Alimentos">Alimentos</option>
-                                <option value="Bebidas">Bebidas</option>
-                                <option value="Limpieza">Limpieza</option>
-                                <option value="Higiene">Higiene</option>
-                                <option value="Otros">Otros</option>
+                                <option value="">📂 Todas las categorías</option>
+                                <option value="Alimentos y Bebidas">🍕 Alimentos y Bebidas</option>
+                                <option value="Bebidas">🥤 Bebidas</option>
+                                <option value="Lácteos">🥛 Lácteos</option>
+                                <option value="Panadería">🍞 Panadería</option>
+                                <option value="Carnes y Embutidos">🥩 Carnes y Embutidos</option>
+                                <option value="Frutas y Verduras">🍎 Frutas y Verduras</option>
+                                <option value="Limpieza">🧽 Limpieza</option>
+                                <option value="Higiene Personal">🧴 Higiene Personal</option>
+                                <option value="Medicamentos">💊 Medicamentos</option>
+                                <option value="Electrónicos">📱 Electrónicos</option>
+                                <option value="Hogar y Decoración">🏠 Hogar y Decoración</option>
+                                <option value="Ropa y Accesorios">👕 Ropa y Accesorios</option>
+                                <option value="Juguetes">🧸 Juguetes</option>
+                                <option value="Papelería">📝 Papelería</option>
+                                <option value="Ferretería">🔧 Ferretería</option>
+                                <option value="Mascotas">🐕 Mascotas</option>
+                                <option value="Cigarrillos">🚬 Cigarrillos</option>
+                                <option value="Otros">📋 Otros</option>
                             </select>
                         </div>
                         
                         <button class="btn btn-secondary" onclick="clearFilters()">
-                             Limpiar Filtros
+                            🗑️ Limpiar Filtros
                         </button>
                     </div>
                 </div>
 
-                <!-- Tabla de productos -->
+                
                 <div class="table-container">
                     <table class="table" id="productsTable">
                         <thead>
@@ -135,14 +161,14 @@
                 </div>
 
                 <div id="noProducts" style="display: none; text-align: center; padding: 40px;">
-                    <h3> No hay productos registrados</h3>
+                    <h3>📦 No hay productos registrados</h3>
                     <p>Comienza agregando tu primer producto usando el botón "Nuevo Producto"</p>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- editar producto -->
+    
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -172,13 +198,24 @@
                         <label for="editCategoria">Categoría</label>
                         <select id="editCategoria" name="categoria">
                             <option value="">Seleccionar categoría</option>
-                            <option value="Alimentos">Alimentos</option>
-                            <option value="Bebidas">Bebidas</option>
-                            <option value="Limpieza">Limpieza</option>
-                            <option value="Higiene">Higiene</option>
-                            <option value="Electrónicos">Electrónicos</option>
-                            <option value="Ropa">Ropa</option>
-                            <option value="Otros">Otros</option>
+                            <option value="Alimentos y Bebidas">🍕 Alimentos y Bebidas</option>
+                            <option value="Bebidas">🥤 Bebidas</option>
+                            <option value="Lácteos">🥛 Lácteos</option>
+                            <option value="Panadería">🍞 Panadería</option>
+                            <option value="Carnes y Embutidos">🥩 Carnes y Embutidos</option>
+                            <option value="Frutas y Verduras">🍎 Frutas y Verduras</option>
+                            <option value="Limpieza">🧽 Limpieza</option>
+                            <option value="Higiene Personal">🧴 Higiene Personal</option>
+                            <option value="Medicamentos">💊 Medicamentos</option>
+                            <option value="Electrónicos">📱 Electrónicos</option>
+                            <option value="Hogar y Decoración">🏠 Hogar y Decoración</option>
+                            <option value="Ropa y Accesorios">👕 Ropa y Accesorios</option>
+                            <option value="Juguetes">🧸 Juguetes</option>
+                            <option value="Papelería">📝 Papelería</option>
+                            <option value="Ferretería">🔧 Ferretería</option>
+                            <option value="Mascotas">🐕 Mascotas</option>
+                            <option value="Cigarrillos">🚬 Cigarrillos</option>
+                            <option value="Otros">📋 Otros</option>
                         </select>
                     </div>
                 </div>
@@ -201,7 +238,7 @@
                         <span class="btn-text">💾 Actualizar</span>
                     </button>
                     <button type="button" class="btn btn-secondary" onclick="closeEditModal()">
-                         Cancelar
+                        ❌ Cancelar
                     </button>
                 </div>
             </form>

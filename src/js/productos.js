@@ -11,21 +11,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupEventListeners();
 });
 
-
 function setupEventListeners() {
-    // Formulario de agregar producto
+    
     const addForm = document.getElementById('addProductForm');
     if (addForm) {
         addForm.addEventListener('submit', handleAddProduct);
     }
 
-    // Formulario de editar producto
+    
     const editForm = document.getElementById('editProductForm');
     if (editForm) {
         editForm.addEventListener('submit', handleEditProduct);
     }
 
-    
+  
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeEditModal();
@@ -43,7 +42,7 @@ function setupEventListeners() {
     }
 }
 
-// Cargar productos desde la base de datos
+
 async function loadProductos() {
     try {
         showLoadingInTable(true);
@@ -65,7 +64,7 @@ async function loadProductos() {
     }
 }
 
-// Mostrar productos en la tabla
+
 function displayProductos(productosArray) {
     const tableBody = document.getElementById('productsTableBody');
     
@@ -98,15 +97,29 @@ function displayProductos(productosArray) {
                 <td style="text-align: center;">${producto.stock}</td>
                 <td style="text-align: center;">${stockBadge}</td>
                 <td style="text-align: center;">
-                    <div style="display: flex; gap: 5px; justify-content: center; flex-wrap: wrap;">
-                        <button class="btn-icon btn-primary" onclick="editProduct(${producto.id})" title="Editar">
-                            
+                    <div class="action-buttons">
+                        <button class="btn-action btn-edit" onclick="editProduct(${producto.id})" 
+                                title="Editar producto" data-tooltip="Editar">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                            </svg>
+                            <span class="btn-label">Editar</span>
                         </button>
-                        <button class="btn-icon btn-success" onclick="adjustStock(${producto.id}, '${producto.nombre}')" title="Ajustar Stock">
-                            
+                        
+                        <button class="btn-action btn-stock" onclick="adjustStock(${producto.id}, '${producto.nombre.replace(/'/g, "\\'")}')" 
+                                title="Ajustar stock" data-tooltip="Ajustar Stock">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                            </svg>
+                            <span class="btn-label">Stock</span>
                         </button>
-                        <button class="btn-icon btn-danger" onclick="deleteProduct(${producto.id}, '${producto.nombre}')" title="Eliminar">
-                            
+                        
+                        <button class="btn-action btn-delete" onclick="deleteProduct(${producto.id}, '${producto.nombre.replace(/'/g, "\\'")}')" 
+                                title="Eliminar producto" data-tooltip="Eliminar">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                            </svg>
+                            <span class="btn-label">Eliminar</span>
                         </button>
                     </div>
                 </td>
@@ -118,7 +131,6 @@ function displayProductos(productosArray) {
     showLoadingInTable(false);
 }
 
-// Obtener estado del stock
 function getStockStatus(stock) {
     if (stock === 0) return 'sin-stock';
     if (stock <= 5) return 'stock-bajo';
@@ -126,13 +138,13 @@ function getStockStatus(stock) {
     return 'stock-alto';
 }
 
-// Obtener badge de stock
+
 function getStockBadge(status) {
     const badges = {
-        'sin-stock': '<span style="background: #dc3545; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">Sin Stock</span>',
-        'stock-bajo': '<span style="background: #ffc107; color: #212529; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">Stock Bajo</span>',
-        'stock-medio': '<span style="background: #fd7e14; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">Stock Medio</span>',
-        'stock-alto': '<span style="background: #28a745; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem;">Stock OK</span>'
+        'sin-stock': '<span class="stock-badge stock-none">Sin Stock</span>',
+        'stock-bajo': '<span class="stock-badge stock-low">Stock Bajo</span>',
+        'stock-medio': '<span class="stock-badge stock-medium">Stock Medio</span>',
+        'stock-alto': '<span class="stock-badge stock-high">Stock OK</span>'
     };
     
     return badges[status] || badges['stock-alto'];
@@ -146,9 +158,7 @@ function showProductForm() {
     form.style.display = 'block';
     addForm.reset();
     
-    
     form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    
     
     setTimeout(() => {
         document.getElementById('nombre').focus();
@@ -172,7 +182,6 @@ async function handleAddProduct(event) {
     const text = submitBtn.querySelector('.btn-text');
     
     try {
-        
         loading.style.display = 'inline-flex';
         text.style.display = 'none';
         submitBtn.disabled = true;
@@ -187,7 +196,7 @@ async function handleAddProduct(event) {
             codigo_barras: formData.get('codigo_barras').trim() || null
         };
 
-        // Validaciones
+       
         if (!producto.nombre) {
             throw new Error('El nombre del producto es requerido');
         }
@@ -196,7 +205,7 @@ async function handleAddProduct(event) {
             throw new Error('El precio debe ser mayor a 0');
         }
 
-        // Verificar si ya existe el código de barras
+       
         if (producto.codigo_barras) {
             const existeCodigoBarras = productos.some(p => 
                 p.codigo_barras === producto.codigo_barras
@@ -206,20 +215,19 @@ async function handleAddProduct(event) {
             }
         }
 
-        // Guardar en la base de datos
+       
         const result = await ipcRenderer.invoke('add-producto', producto);
         
         if (result) {
-            showNotification('Producto agregado exitosamente', 'success');
+            showNotification(`✅ Producto "${producto.nombre}" agregado exitosamente`, 'success');
             hideProductForm();
             await loadProductos();
         }
 
     } catch (error) {
         console.error('Error agregando producto:', error);
-        showNotification(error.message || 'Error agregando producto', 'error');
+        showNotification(`❌ ${error.message}`, 'error');
     } finally {
-        // Ocultar loading
         loading.style.display = 'none';
         text.style.display = 'inline';
         submitBtn.disabled = false;
@@ -230,11 +238,10 @@ async function handleAddProduct(event) {
 function editProduct(id) {
     const producto = productos.find(p => p.id === id);
     if (!producto) {
-        showNotification('Producto no encontrado', 'error');
+        showNotification('❌ Producto no encontrado', 'error');
         return;
     }
 
-    
     document.getElementById('editId').value = producto.id;
     document.getElementById('editNombre').value = producto.nombre;
     document.getElementById('editDescripcion').value = producto.descripcion || '';
@@ -245,7 +252,6 @@ function editProduct(id) {
 
     const modal = document.getElementById('editModal');
     modal.classList.add('show');
-    
     
     setTimeout(() => {
         document.getElementById('editNombre').focus();
@@ -261,7 +267,6 @@ async function handleEditProduct(event) {
     const text = submitBtn.querySelector('.btn-text');
     
     try {
-        
         loading.style.display = 'inline-flex';
         text.style.display = 'none';
         submitBtn.disabled = true;
@@ -277,7 +282,7 @@ async function handleEditProduct(event) {
             codigo_barras: formData.get('codigo_barras').trim() || null
         };
 
-        // Validaciones
+        
         if (!producto.nombre) {
             throw new Error('El nombre del producto es requerido');
         }
@@ -286,7 +291,7 @@ async function handleEditProduct(event) {
             throw new Error('El precio debe ser mayor a 0');
         }
 
-        // Verificar si ya existe el código de barras (excluyendo el producto actual)
+        
         if (producto.codigo_barras) {
             const existeCodigoBarras = productos.some(p => 
                 p.codigo_barras === producto.codigo_barras && p.id !== id
@@ -296,20 +301,18 @@ async function handleEditProduct(event) {
             }
         }
 
-        // Actualizar en la base de datos
         const result = await ipcRenderer.invoke('update-producto', id, producto);
         
         if (result) {
-            showNotification('Producto actualizado exitosamente', 'success');
+            showNotification(`✅ Producto "${producto.nombre}" actualizado exitosamente`, 'success');
             closeEditModal();
             await loadProductos();
         }
 
     } catch (error) {
         console.error('Error actualizando producto:', error);
-        showNotification(error.message || 'Error actualizando producto', 'error');
+        showNotification(`❌ ${error.message}`, 'error');
     } finally {
-        
         loading.style.display = 'none';
         text.style.display = 'inline';
         submitBtn.disabled = false;
@@ -320,71 +323,95 @@ async function handleEditProduct(event) {
 function closeEditModal() {
     const modal = document.getElementById('editModal');
     modal.classList.remove('show');
-    
-    // Limpiar formulario
     document.getElementById('editProductForm').reset();
 }
 
-// Ajustar stock de un producto
+
 function adjustStock(id, nombre) {
-    const cantidad = prompt(`Ajustar stock para "${nombre}"\n\nIngrese la cantidad a agregar/quitar:\n(Número positivo para agregar, negativo para quitar)`);
+    const currentProduct = productos.find(p => p.id === id);
+    const currentStock = currentProduct ? currentProduct.stock : 0;
     
-    if (cantidad === null) return; // Usuario canceló
+    const cantidad = prompt(
+        `📦 Ajustar stock para: "${nombre}"\n` +
+        `📊 Stock actual: ${currentStock} unidades\n\n` +
+        `➕ Para AGREGAR stock: ingresa número positivo (ej: 10)\n` +
+        `➖ Para QUITAR stock: ingresa número negativo (ej: -5)\n\n` +
+        `Ingresa la cantidad:`
+    );
+    
+    if (cantidad === null) return; 
     
     const ajuste = parseInt(cantidad);
     if (isNaN(ajuste)) {
-        showNotification('Cantidad inválida', 'error');
+        showNotification('❌ Cantidad inválida. Debe ser un número', 'error');
+        return;
+    }
+
+    if (ajuste === 0) {
+        showNotification('⚠️ No se realizó ningún cambio', 'warning');
+        return;
+    }
+
+  
+    if (currentStock + ajuste < 0) {
+        showNotification(`❌ No se puede reducir el stock por debajo de 0. Stock actual: ${currentStock}`, 'error');
         return;
     }
 
     adjustStockConfirmed(id, ajuste, nombre);
 }
 
-
 async function adjustStockConfirmed(id, ajuste, nombre) {
     try {
         const result = await ipcRenderer.invoke('update-stock', id, ajuste);
         
         if (result && result.changes > 0) {
-            const accion = ajuste > 0 ? 'agregado' : 'reducido';
-            showNotification(`Stock ${accion} para "${nombre}"`, 'success');
+            const accion = ajuste > 0 ? 'agregaron' : 'redujeron';
+            const cantidad = Math.abs(ajuste);
+            showNotification(`✅ Se ${accion} ${cantidad} unidades al stock de "${nombre}"`, 'success');
             await loadProductos();
         } else {
-            showNotification('No se pudo actualizar el stock', 'error');
+            showNotification('❌ No se pudo actualizar el stock', 'error');
         }
     } catch (error) {
         console.error('Error ajustando stock:', error);
-        showNotification('Error ajustando stock', 'error');
+        showNotification('❌ Error ajustando stock', 'error');
     }
 }
 
-// Eliminar producto
+
 function deleteProduct(id, nombre) {
-    const confirmDelete = confirm(`¿Está seguro que desea eliminar el producto "${nombre}"?\n\nEsta acción no se puede deshacer.`);
+    const confirmDelete = confirm(
+        `⚠️ ELIMINAR PRODUCTO\n\n` +
+        `¿Está seguro que desea eliminar el producto?\n\n` +
+        `📦 "${nombre}"\n\n` +
+        `⚠️ Esta acción NO se puede deshacer\n` +
+        `✅ Presiona OK para confirmar\n` +
+        `❌ Presiona Cancelar para abortar`
+    );
     
     if (confirmDelete) {
         deleteProductConfirmed(id, nombre);
     }
 }
 
-// Confirmar eliminación de producto
 async function deleteProductConfirmed(id, nombre) {
     try {
         const result = await ipcRenderer.invoke('delete-producto', id);
         
         if (result && result.changes > 0) {
-            showNotification(`Producto "${nombre}" eliminado exitosamente`, 'success');
+            showNotification(`✅ Producto "${nombre}" eliminado exitosamente`, 'success');
             await loadProductos();
         } else {
-            showNotification('No se pudo eliminar el producto', 'error');
+            showNotification('❌ No se pudo eliminar el producto', 'error');
         }
     } catch (error) {
         console.error('Error eliminando producto:', error);
-        showNotification('Error eliminando producto', 'error');
+        showNotification('❌ Error eliminando producto', 'error');
     }
 }
 
-// Filtrar productos
+
 function filterProducts() {
     const searchTerm = document.getElementById('searchProduct').value.toLowerCase();
     const categoryFilter = document.getElementById('filterCategory').value;
@@ -402,7 +429,6 @@ function filterProducts() {
 
     displayProductos(productosFiltrados);
     
-    // Mostrar mensaje si no hay resultados
     if (productosFiltrados.length === 0 && productosOriginal.length > 0) {
         const tableBody = document.getElementById('productsTableBody');
         tableBody.innerHTML = `
@@ -415,14 +441,13 @@ function filterProducts() {
     }
 }
 
-// Limpiar filtros
 function clearFilters() {
     document.getElementById('searchProduct').value = '';
     document.getElementById('filterCategory').value = '';
     displayProductos(productosOriginal);
+    showNotification('🗑️ Filtros limpiados', 'info');
 }
 
-// Navegación
 function navigateTo(page) {
     const pages = {
         'index': '../views/index.html',
@@ -436,7 +461,7 @@ function navigateTo(page) {
     }
 }
 
-// Mostrar/ocultar mensaje de carga en tabla
+
 function showLoadingInTable(show) {
     const tableBody = document.getElementById('productsTableBody');
     
@@ -452,7 +477,6 @@ function showLoadingInTable(show) {
     }
 }
 
-// Mostrar mensaje cuando no hay productos
 function showNoProductsMessage() {
     const tableContainer = document.querySelector('.table-container');
     const noProductsDiv = document.getElementById('noProducts');
@@ -461,7 +485,6 @@ function showNoProductsMessage() {
     noProductsDiv.style.display = 'block';
 }
 
-// Ocultar mensaje cuando hay productos
 function hideNoProductsMessage() {
     const tableContainer = document.querySelector('.table-container');
     const noProductsDiv = document.getElementById('noProducts');
@@ -470,19 +493,10 @@ function hideNoProductsMessage() {
     noProductsDiv.style.display = 'none';
 }
 
-// Mostrar notificaciones (reutilizada del index.js)
 function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
-    notification.className = `alert alert-${type}`;
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-        min-width: 300px;
-        animation: slideIn 0.3s ease;
-    `;
-
+    notification.className = `notification notification-${type}`;
+    
     const icons = {
         'success': '✅',
         'error': '❌',
@@ -491,67 +505,31 @@ function showNotification(message, type = 'info') {
     };
 
     notification.innerHTML = `
-        <span>${icons[type] || icons.info}</span>
-        <span>${message}</span>
-        <button onclick="this.parentElement.remove()" style="
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            margin-left: auto;
-            padding: 0 5px;
-        ">×</button>
+        <div class="notification-content">
+            <span class="notification-icon">${icons[type] || icons.info}</span>
+            <span class="notification-message">${message}</span>
+            <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+        </div>
     `;
 
     document.body.appendChild(notification);
 
     setTimeout(() => {
         if (notification.parentElement) {
-            notification.style.animation = 'slideOut 0.3s ease';
+            notification.classList.add('notification-fade-out');
             setTimeout(() => notification.remove(), 300);
         }
     }, 5000);
 }
 
-// Agregar estilos adicionales para los botones de iconos
-const additionalStyles = document.createElement('style');
-additionalStyles.textContent = `
-    .btn-icon {
-        background: none;
-        border: none;
-        padding: 6px 8px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        transition: all 0.3s ease;
-    }
-    
-    .btn-icon.btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-    }
-    
-    .btn-icon.btn-success {
-        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-        color: white;
-    }
-    
-    .btn-icon.btn-danger {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        color: white;
-    }
-    
-    .btn-icon:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
-    
-    .category-badge {
-        background: #e9ecef;
-        color: #495057;
-        padding: 2px 8px;
-        border-radius: 12px;
-        font-size: 0.8rem;
-    }
-`;
-document.head.appendChild(additionalStyles);
+
+window.addEventListener('error', (event) => {
+    console.error('Error global:', event.error);
+    showNotification('❌ Ha ocurrido un error inesperado', 'error');
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+    console.error('Error de promesa no manejada:', event.reason);
+    showNotification('❌ Error de conexión con la base de datos', 'error');
+    event.preventDefault();
+});

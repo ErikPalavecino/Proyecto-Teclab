@@ -1,0 +1,24 @@
+{
+  "name": "sistema-gestion-ventas",
+  "version": "1.0.0",
+  "description": "Sistema de gestión de stock y ventas",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev"
+  },
+  "keywords": [
+    "electron",
+    "ventas",
+    "stock",
+    "inventario"
+  ],
+  "author": "Erik German Palavecino",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^26.0.0"
+  },
+  "dependencies": {
+    "better-sqlite3": "^9.0.0"
+  }
+}

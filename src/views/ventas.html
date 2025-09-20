@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Ventas</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1> Sistema de Ventas</h1>
+            <p class="subtitle">Registrar nuevas ventas</p>
+            <div style="margin-top: 15px;">
+                <button class="btn btn-secondary" onclick="navigateTo('index')">
+                     Volver al Inicio
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <div class="form-container">
+                <h2> En Desarrollo</h2>
+                <p>Esta sección estará disponible en la próxima fase del desarrollo.</p>
+                <p><strong>Funcionalidades planificadas:</strong></p>
+                <ul>
+                    <li>Seleccionar productos para la venta</li>
+                    <li>Carrito de compras</li>
+                    <li>Actualización automática de stock</li>
+                </ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function navigateTo(page) {
+            const pages = {
+                'index': './index.html',
+                'productos': './productos.html',
+                'stock': './stock.html',
+                'reportes': './reportes.html'
+            };
+
+            if (pages[page]) {
+                window.location.href = pages[page];
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Productos</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1> Gestión de Productos</h1>
+            <p class="subtitle">Administrar inventario de productos</p>
+            <div style="margin-top: 15px;">
+                <button class="btn btn-secondary" onclick="navigateTo('index')">
+                     Volver al Inicio
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <div class="form-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                    <h2>Agregar Nuevo Producto</h2>
+                    <button class="btn btn-primary" onclick="showProductForm()">
+                         Nuevo Producto
+                    </button>
+                </div>
+
+                <!-- Formulario de producto -->
+                <div id="productForm" style="display: none;">
+                    <form id="addProductForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="nombre">Nombre del Producto *</label>
+                                <input type="text" id="nombre" name="nombre" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="precio">Precio *</label>
+                                <input type="number" id="precio" name="precio" step="0.01" min="0" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="stock">Stock Inicial</label>
+                                <input type="number" id="stock" name="stock" min="0" value="0">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="categoria">Categoría</label>
+                                <select id="categoria" name="categoria">
+                                    <option value="">Seleccionar categoría</option>
+                                    <option value="Alimentos">Alimentos</option>
+                                    <option value="Bebidas">Bebidas</option>
+                                    <option value="Limpieza">Limpieza</option>
+                                    <option value="Higiene">Higiene</option>
+                                    <option value="Otros">Otros</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="descripcion">Descripción</label>
+                            <textarea id="descripcion" name="descripcion" rows="3" placeholder="Descripción opcional del producto"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="codigo_barras">Código de Barras</label>
+                            <input type="text" id="codigo_barras" name="codigo_barras" placeholder="Opcional">
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button type="submit" class="btn btn-primary">
+                                <span class="btn-loading" style="display: none;">
+                                    <div class="loading"></div>
+                                </span>
+                                <span class="btn-text"> Guardar Producto</span>
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="hideProductForm()">
+                                 Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Filtros y búsqueda -->
+                <div style="margin: 30px 0;">
+                    <h2>Lista de Productos</h2>
+                    <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;">
+                        <div class="form-group" style="margin: 0; min-width: 250px;">
+                            <input type="text" id="searchProduct" placeholder="🔍 Buscar productos..." 
+                                   style="margin: 0;" onkeyup="filterProducts()">
+                        </div>
+                        
+                        <div class="form-group" style="margin: 0;">
+                            <select id="filterCategory" onchange="filterProducts()">
+                                <option value="">Todas las categorías</option>
+                                <option value="Alimentos">Alimentos</option>
+                                <option value="Bebidas">Bebidas</option>
+                                <option value="Limpieza">Limpieza</option>
+                                <option value="Higiene">Higiene</option>
+                                <option value="Otros">Otros</option>
+                            </select>
+                        </div>
+                        
+                        <button class="btn btn-secondary" onclick="clearFilters()">
+                             Limpiar Filtros
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabla de productos -->
+                <div class="table-container">
+                    <table class="table" id="productsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Categoría</th>
+                                <th>Precio</th>
+                                <th>Stock</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody">
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 40px;">
+                                    <div class="loading"></div>
+                                    <p style="margin-top: 10px;">Cargando productos...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="noProducts" style="display: none; text-align: center; padding: 40px;">
+                    <h3> No hay productos registrados</h3>
+                    <p>Comienza agregando tu primer producto usando el botón "Nuevo Producto"</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- editar producto -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✏️ Editar Producto</h3>
+                <button class="close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <form id="editProductForm">
+                <input type="hidden" id="editId" name="id">
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="editNombre">Nombre del Producto *</label>
+                        <input type="text" id="editNombre" name="nombre" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editPrecio">Precio *</label>
+                        <input type="number" id="editPrecio" name="precio" step="0.01" min="0" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editStock">Stock</label>
+                        <input type="number" id="editStock" name="stock" min="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editCategoria">Categoría</label>
+                        <select id="editCategoria" name="categoria">
+                            <option value="">Seleccionar categoría</option>
+                            <option value="Alimentos">Alimentos</option>
+                            <option value="Bebidas">Bebidas</option>
+                            <option value="Limpieza">Limpieza</option>
+                            <option value="Higiene">Higiene</option>
+                            <option value="Electrónicos">Electrónicos</option>
+                            <option value="Ropa">Ropa</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editDescripcion">Descripción</label>
+                    <textarea id="editDescripcion" name="descripcion" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editCodigoBarras">Código de Barras</label>
+                    <input type="text" id="editCodigoBarras" name="codigo_barras">
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary">
+                        <span class="btn-loading" style="display: none;">
+                            <div class="loading"></div>
+                        </span>
+                        <span class="btn-text">💾 Actualizar</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">
+                         Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/productos.js"></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1> Reportes</h1>
+            <p class="subtitle">Análisis y estadísticas</p>
+            <div style="margin-top: 15px;">
+                <button class="btn btn-secondary" onclick="navigateTo('index')">
+                    Volver al Inicio
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <div class="form-container">
+                <h2>En Desarrollo</h2>
+                <p>Esta sección estará disponible en la próxima fase del desarrollo.</p>
+                <p><strong>Reportes planificados:</strong></p>
+                <ul>
+                    <li>Ventas del día</li>
+                    <li>Productos con stock bajo</li>
+                    <li>Producto más vendido</li>
+                    <li>Resumen de ingresos</li>
+                    <li>Exportación de reportes</li>
+                </ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function navigateTo(page) {
+            const pages = {
+                'index': './index.html',
+                'productos': './productos.html',
+                'ventas': './ventas.html',
+                'stock': './stock.html'
+            };
+
+            if (pages[page]) {
+                window.location.href = pages[page];
+            }
+        }
+    </script>
+</body>
+</html>

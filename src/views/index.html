@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión - Inicio</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sistema de Gestión de Stock y Ventas</h1>
+            <p class="subtitle">Panel de control principal</p>
+        </header>
+
+        <main>
+            <div class="dashboard">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"></div>
+                        <div class="stat-content">
+                            <h3>Total Productos</h3>
+                            <div class="stat-number" id="totalProductos">0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon"></div>
+                        <div class="stat-content">
+                            <h3>Ventas del Día</h3>
+                            <div class="stat-number" id="ventasDelDia">$0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon"></div>
+                        <div class="stat-content">
+                            <h3>Stock Bajo</h3>
+                            <div class="stat-number" id="stockBajo">0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon"></div>
+                        <div class="stat-content">
+                            <h3>Más Vendido</h3>
+                            <div class="stat-text" id="masVendido">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <h2>Acciones Rápidas</h2>
+                    <div class="actions-grid">
+                        <button class="action-btn primary" onclick="navigateTo('productos')">
+                            <div class="btn-icon"></div>
+                            <div class="btn-text">
+                                <h3>Gestionar Productos</h3>
+                                <p>Agregar, editar y eliminar productos</p>
+                            </div>
+                        </button>
+
+                        <button class="action-btn success" onclick="navigateTo('ventas')">
+                            <div class="btn-icon"></div>
+                            <div class="btn-text">
+                                <h3>Nueva Venta</h3>
+                                <p>Registrar una nueva venta</p>
+                            </div>
+                        </button>
+
+                        <button class="action-btn info" onclick="navigateTo('stock')">
+                            <div class="btn-icon"></div>
+                            <div class="btn-text">
+                                <h3>Consultar Stock</h3>
+                                <p>Ver inventario actual</p>
+                            </div>
+                        </button>
+
+                        <button class="action-btn warning" onclick="navigateTo('reportes')">
+                            <div class="btn-icon"></div>
+                            <div class="btn-text">
+                                <h3>Ver Reportes</h3>
+                                <p>Análisis y estadísticas</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="recent-activity">
+                    <h2>Actividad Reciente</h2>
+                    <div class="activity-list" id="activityList">
+                        <div class="activity-item">
+                            <div class="activity-icon"></div>
+                            <div class="activity-text">
+                                <p>Sistema iniciado correctamente</p>
+                                <small id="currentTime"></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/index.js"></script>
+</body>
+</html>

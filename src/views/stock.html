@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Stock</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1> Consulta de Stock</h1>
+            <p class="subtitle">Verificar inventario actual</p>
+            <div style="margin-top: 15px;">
+                <button class="btn btn-secondary" onclick="navigateTo('index')">
+                     Volver al Inicio
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <div class="form-container">
+                <h2> En Desarrollo</h2>
+                <p>Esta sección estará disponible en la próxima fase del desarrollo.</p>
+                <p><strong>Funcionalidades planificadas:</strong></p>
+                <ul>
+                    <li>Vista completa del inventario</li>
+                    <li>Alertas de stock bajo</li>
+                    <li>Ajustes de inventario</li>
+                </ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function navigateTo(page) {
+            const pages = {
+                'index': './index.html',
+                'productos': './productos.html',
+                'ventas': './ventas.html',
+                'reportes': './reportes.html'
+            };
+
+            if (pages[page]) {
+                window.location.href = pages[page];
+            }
+        }
+    </script>
+</body>
+</html>

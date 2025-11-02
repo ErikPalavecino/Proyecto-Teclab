@@ -79,55 +79,65 @@ function displayProductos(productosArray) {
         return;
     }
 
-    const rows = productosArray.map(producto => {
+    // Limpiar el tbody
+    tableBody.innerHTML = '';
+
+    // Crear filas para cada producto
+    productosArray.forEach(producto => {
         const stockStatus = getStockStatus(producto.stock);
         const stockBadge = getStockBadge(stockStatus);
         
-        return `
-            <tr>
-                <td>#${producto.id}</td>
-                <td>
-                    <strong>${producto.nombre}</strong>
-                    ${producto.descripcion ? `<br><small style="color: #666;">${producto.descripcion}</small>` : ''}
-                </td>
-                <td>
-                    <span class="category-badge">${producto.categoria || 'Sin categoría'}</span>
-                </td>
-                <td style="font-weight: bold;">$${producto.precio.toFixed(2)}</td>
-                <td style="text-align: center;">${producto.stock}</td>
-                <td style="text-align: center;">${stockBadge}</td>
-                <td style="text-align: center;">
-                    <div class="action-buttons">
-                        <button class="btn-action btn-edit" onclick="editProduct(${producto.id})" 
-                                title="Editar producto">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-                            </svg>
-                            <span class="btn-label">Editar</span>
-                        </button>
-                        
-                        <button class="btn-action btn-stock" onclick="adjustStock(${producto.id}, '${producto.nombre.replace(/'/g, "\\'")}', ${producto.stock})" 
-                                title="Ajustar stock">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                            </svg>
-                            <span class="btn-label">Stock</span>
-                        </button>
-                        
-                        <button class="btn-action btn-delete" onclick="deleteProduct(${producto.id}, '${producto.nombre.replace(/'/g, "\\'")}');" 
-                                title="Eliminar producto">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-                            </svg>
-                            <span class="btn-label">Eliminar</span>
-                        </button>
-                    </div>
-                </td>
-            </tr>
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>#${producto.id}</td>
+            <td>
+                <strong>${producto.nombre}</strong>
+                ${producto.descripcion ? `<br><small style="color: #666;">${producto.descripcion}</small>` : ''}
+            </td>
+            <td>
+                <span class="category-badge">${producto.categoria || 'Sin categoría'}</span>
+            </td>
+            <td style="font-weight: bold;">$${producto.precio.toFixed(2)}</td>
+            <td style="text-align: center;">${producto.stock}</td>
+            <td style="text-align: center;">${stockBadge}</td>
+            <td style="text-align: center;">
+                <div class="action-buttons">
+                    <button class="btn-action btn-edit" data-id="${producto.id}" title="Editar producto">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                        </svg>
+                        <span class="btn-label">Editar</span>
+                    </button>
+                    
+                    <button class="btn-action btn-stock" data-id="${producto.id}" data-nombre="${producto.nombre}" data-stock="${producto.stock}" title="Ajustar stock">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </svg>
+                        <span class="btn-label">Stock</span>
+                    </button>
+                    
+                    <button class="btn-action btn-delete" data-id="${producto.id}" data-nombre="${producto.nombre}" title="Eliminar producto">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                        </svg>
+                        <span class="btn-label">Eliminar</span>
+                    </button>
+                </div>
+            </td>
         `;
-    }).join('');
 
-    tableBody.innerHTML = rows;
+        // Agregar event listeners a los botones
+        const btnEdit = row.querySelector('.btn-edit');
+        const btnStock = row.querySelector('.btn-stock');
+        const btnDelete = row.querySelector('.btn-delete');
+
+        btnEdit.addEventListener('click', () => editProduct(producto.id));
+        btnStock.addEventListener('click', () => adjustStock(producto.id, producto.nombre, producto.stock));
+        btnDelete.addEventListener('click', () => deleteProduct(producto.id, producto.nombre));
+
+        tableBody.appendChild(row);
+    });
+
     showLoadingInTable(false);
 }
 

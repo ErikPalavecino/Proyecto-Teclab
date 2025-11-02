@@ -727,6 +727,31 @@ header h1 {
   animation: modalSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+/* Estilos específicos para inputs dentro del modal */
+.modal-content .form-group input,
+.modal-content .form-group textarea,
+.modal-content .form-group select {
+  background: rgba(255, 255, 255, 0.9);
+  color: #2d3748;
+  border: 2px solid rgba(102, 126, 234, 0.2);
+}
+
+.modal-content .form-group input:focus,
+.modal-content .form-group textarea:focus,
+.modal-content .form-group select:focus {
+  background: rgba(255, 255, 255, 1);
+  color: #2d3748;
+  border-color: rgba(102, 126, 234, 0.6);
+}
+
+.modal-content .form-group input::placeholder,
+.modal-content .form-group textarea::placeholder {
+  color: rgba(45, 55, 72, 0.5);
+}
+
+.modal-content .form-group label {
+  color: #2d3748;
+}
 @keyframes modalSlideIn {
   from {
     opacity: 0;

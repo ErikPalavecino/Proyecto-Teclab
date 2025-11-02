@@ -365,27 +365,30 @@ async function handleFinalizeSale(event) {
 
         const result = await ipcRenderer.invoke('add-venta', venta);
 
-        if (result && result.id) {
-            showNotification(`¡Venta #${result.id} registrada exitosamente!`, 'success');
-            
-            // Limpiar carrito y recargar productos
-            carrito = [];
-            updateCarrito();
-            closeCheckoutModal();
-            await loadProductos();
+       if (result && result.id) {
+    showNotification(`¡Venta #${result.id} registrada exitosamente!`, 'success');
+    
+    const totalVentaFinal = totalVenta; // <-- guardo el total antes de vaciar carrito
 
-            // Mostrar resumen
-            setTimeout(() => {
-                alert(
-                    `✅ VENTA COMPLETADA\n\n` +
-                    `📋 Número de venta: #${result.id}\n` +
-                    `💰 Total: $${totalVenta.toFixed(2)}\n` +
-                    `👤 Cliente: ${venta.cliente}\n` +
-                    `💳 Método de pago: ${venta.metodo_pago}\n\n` +
-                    `¡Gracias por su compra!`
-                );
-            }, 500);
-        }
+    // Limpiar carrito y recargar productos
+    carrito = [];
+    updateCarrito();
+    closeCheckoutModal();
+    await loadProductos();
+
+    // Mostrar resumen
+    setTimeout(() => {
+        alert(
+            `✅ VENTA COMPLETADA\n\n` +
+            `📋 Número de venta: #${result.id}\n` +
+            `💰 Total: $${totalVentaFinal.toFixed(2)}\n` +  // <-- uso totalVentaFinal
+            `👤 Cliente: ${venta.cliente}\n` +
+            `💳 Método de pago: ${venta.metodo_pago}\n\n` +
+            `¡Gracias por su compra!`
+        );
+    }, 500);
+}
+
 
     } catch (error) {
         console.error('Error finalizando venta:', error);

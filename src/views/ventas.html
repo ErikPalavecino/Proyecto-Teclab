@@ -5,46 +5,621 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Ventas</title>
     <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .sales-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        /* Productos */
+        .products-section {
+            background: var(--glass-bg);
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius-lg);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-light);
+        }
+
+        .products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .products-header h2 {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.5rem;
+        }
+
+        .filters-row {
+            display: grid;
+            grid-template-columns: 1fr 200px auto;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        #productsGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--spacing-md);
+            max-height: calc(100vh - 320px);
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .product-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            box-shadow: var(--shadow-card);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .product-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .stock-badge-small {
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .product-category {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 500;
+        }
+
+        .product-description {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin: var(--spacing-sm) 0;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: var(--spacing-md) 0;
+            padding-top: var(--spacing-sm);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .product-stock {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .quantity-input {
+            width: 70px;
+            padding: 8px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: var(--border-radius-sm);
+            font-size: 0.9rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .btn-add-cart {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            background: var(--success-gradient);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+
+        .btn-add-cart:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(67, 233, 123, 0.4);
+        }
+
+        /* Carrito */
+        .cart-section {
+            background: var(--glass-bg);
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius-lg);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-light);
+            position: sticky;
+            top: 20px;
+            max-height: calc(100vh - 40px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .cart-header h2 {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-clear-cart {
+            background: rgba(245, 87, 108, 0.2);
+            color: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(245, 87, 108, 0.3);
+            padding: 8px 16px;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-clear-cart:hover {
+            background: rgba(245, 87, 108, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: var(--spacing-lg);
+            padding-right: 10px;
+        }
+
+        .cart-item {
+            background: rgba(255, 255, 255, 0.95);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius-sm);
+            margin-bottom: var(--spacing-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--spacing-sm);
+            animation: slideInRight 0.3s ease;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-info strong {
+            display: block;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .cart-item-details {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .cart-quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 4px;
+            border-radius: var(--border-radius-sm);
+        }
+
+        .btn-qty {
+            background: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-qty:hover:not(:disabled) {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn-qty:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .cart-quantity {
+            min-width: 30px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .cart-item-subtotal {
+            font-weight: 700;
+            color: var(--text-primary);
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .btn-remove {
+            background: var(--secondary-gradient);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: var(--border-radius-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-remove:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: var(--spacing-xl);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .empty-cart svg {
+            width: 80px;
+            height: 80px;
+            opacity: 0.3;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .cart-summary {
+            background: rgba(255, 255, 255, 0.1);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius-sm);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .cart-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .cart-total-label {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+        }
+
+        .cart-total-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--success-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .btn-finalize-sale {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: none;
+            border-radius: var(--border-radius-sm);
+            background: var(--success-gradient);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-finalize-sale:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(67, 233, 123, 0.6);
+        }
+
+        .btn-finalize-sale:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Modal de Checkout */
+        .checkout-summary {
+            background: rgba(102, 126, 234, 0.1);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .checkout-items-list {
+            list-style: none;
+            padding: 0;
+            margin: var(--spacing-md) 0;
+        }
+
+        .checkout-items-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--spacing-sm) 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            color: var(--text-secondary);
+        }
+
+        .checkout-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: var(--spacing-md);
+            padding-top: var(--spacing-md);
+            border-top: 2px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .checkout-total-amount {
+            background: var(--success-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @media (max-width: 1024px) {
+            .sales-container {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-section {
+                position: relative;
+                top: 0;
+                max-height: none;
+            }
+
+            #productsGrid {
+                max-height: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #productsGrid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1> Sistema de Ventas</h1>
+            <h1>💰 Sistema de Ventas</h1>
             <p class="subtitle">Registrar nuevas ventas</p>
             <div style="margin-top: 15px;">
                 <button class="btn btn-secondary" onclick="navigateTo('index')">
-                     Volver al Inicio
+                    ⬅️ Volver al Inicio
                 </button>
             </div>
         </header>
 
         <main>
-            <div class="form-container">
-                <h2> En Desarrollo</h2>
-                <p>Esta sección estará disponible en la próxima fase del desarrollo.</p>
-                <p><strong>Funcionalidades planificadas:</strong></p>
-                <ul>
-                    <li>Seleccionar productos para la venta</li>
-                    <li>Carrito de compras</li>
-                    <li>Actualización automática de stock</li>
-                </ul>
+            <div class="sales-container">
+                <!-- Sección de Productos -->
+                <div class="products-section">
+                    <div class="products-header">
+                        <h2>📦 Productos Disponibles</h2>
+                    </div>
+
+                    <div class="filters-row">
+                        <input type="text" 
+                               id="searchProduct" 
+                               placeholder="🔍 Buscar productos..." 
+                               class="form-group">
+                        
+                        <select id="filterCategory" class="form-group">
+                            <option value="">📂 Todas</option>
+                            <option value="Alimentos y Bebidas">🍕 Alimentos y Bebidas</option>
+                            <option value="Bebidas">🥤 Bebidas</option>
+                            <option value="Lácteos">🥛 Lácteos</option>
+                            <option value="Panadería">🍞 Panadería</option>
+                            <option value="Carnes y Embutidos">🥩 Carnes y Embutidos</option>
+                            <option value="Frutas y Verduras">🍎 Frutas y Verduras</option>
+                            <option value="Limpieza">🧽 Limpieza</option>
+                            <option value="Higiene Personal">🧴 Higiene Personal</option>
+                            <option value="Medicamentos">💊 Medicamentos</option>
+                            <option value="Electrónicos">📱 Electrónicos</option>
+                            <option value="Hogar y Decoración">🏠 Hogar y Decoración</option>
+                            <option value="Ropa y Accesorios">👕 Ropa y Accesorios</option>
+                            <option value="Juguetes">🧸 Juguetes</option>
+                            <option value="Papelería">📝 Papelería</option>
+                            <option value="Ferretería">🔧 Ferretería</option>
+                            <option value="Mascotas">🐕 Mascotas</option>
+                            <option value="Cigarrillos">🚬 Cigarrillos</option>
+                            <option value="Otros">📋 Otros</option>
+                        </select>
+
+                        <button class="btn btn-secondary" onclick="clearFilters()">
+                            🗑️ Limpiar
+                        </button>
+                    </div>
+
+                    <div id="productsGrid">
+                        <!-- Los productos se cargarán aquí dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Sección del Carrito -->
+                <div class="cart-section">
+                    <div class="cart-header">
+                        <h2>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                            </svg>
+                            Carrito
+                        </h2>
+                        <button class="btn-clear-cart" onclick="clearCart()">
+                            🗑️ Vaciar
+                        </button>
+                    </div>
+
+                    <div class="cart-items" id="cartItems">
+                        <!-- Items del carrito se cargarán aquí -->
+                    </div>
+
+                    <div id="emptyCartMessage" class="empty-cart">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                        </svg>
+                        <h3>Carrito vacío</h3>
+                        <p>Agrega productos para comenzar una venta</p>
+                    </div>
+
+                    <div class="cart-summary">
+                        <div class="cart-total-row">
+                            <span class="cart-total-label">Total:</span>
+                            <span class="cart-total-amount" id="cartTotal">$0.00</span>
+                        </div>
+                        <button class="btn-finalize-sale" onclick="openCheckoutModal()" disabled>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+                            </svg>
+                            Finalizar Venta
+                        </button>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
 
-    <script>
-        function navigateTo(page) {
-            const pages = {
-                'index': './index.html',
-                'productos': './productos.html',
-                'stock': './stock.html',
-                'reportes': './reportes.html'
-            };
+    <!-- Modal de Finalizar Venta -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✅ Finalizar Venta</h3>
+                <button class="close" onclick="closeCheckoutModal()">&times;</button>
+            </div>
 
-            if (pages[page]) {
-                window.location.href = pages[page];
-            }
-        }
-    </script>
+            <div class="checkout-summary">
+                <h4 style="color: var(--text-primary); margin-bottom: 10px;">Resumen de la Venta</h4>
+                <ul class="checkout-items-list" id="checkoutItems">
+                    <!-- Items se cargarán aquí -->
+                </ul>
+                <div class="checkout-total">
+                    <span>Total:</span>
+                    <span class="checkout-total-amount" id="checkoutTotal">$0.00</span>
+                </div>
+            </div>
+
+            <form id="finalizeSaleForm">
+                <div class="form-group">
+                    <label for="clienteNombre">Nombre del Cliente</label>
+                    <input type="text" 
+                           id="clienteNombre" 
+                           name="cliente" 
+                           placeholder="Ej: Juan Pérez (opcional)">
+                </div>
+
+                <div class="form-group">
+                    <label for="metodoPago">Método de Pago *</label>
+                    <select id="metodoPago" name="metodo_pago" required>
+                        <option value="efectivo">💵 Efectivo</option>
+                        <option value="tarjeta_debito">💳 Tarjeta de Débito</option>
+                        <option value="tarjeta_credito">💳 Tarjeta de Crédito</option>
+                        <option value="transferencia">🏦 Transferencia</option>
+                        <option value="mercado_pago">📱 Mercado Pago</option>
+                        <option value="otro">📋 Otro</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="submit" class="btn btn-success">
+                        <span class="btn-loading" style="display: none;">
+                            <div class="loading"></div>
+                        </span>
+                        <span class="btn-text">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display: inline-block; vertical-align: middle; margin-right: 6px;">
+                                <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+                            </svg>
+                            Confirmar Venta
+                        </span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="closeCheckoutModal()">
+                        ❌ Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/ventas.js"></script>
 </body>
 </html>

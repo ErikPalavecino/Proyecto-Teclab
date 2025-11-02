@@ -1,10 +1,10 @@
 const { ipcRenderer } = require('electron');
 
-
+// Variables globales
 let productos = [];
 let productosOriginal = [];
 
-
+// Inicialización
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('Página de productos cargada');
     await loadProductos();
@@ -12,26 +12,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function setupEventListeners() {
-    
+    // Formulario de agregar
     const addForm = document.getElementById('addProductForm');
     if (addForm) {
         addForm.addEventListener('submit', handleAddProduct);
     }
 
-    
+    // Formulario de editar
     const editForm = document.getElementById('editProductForm');
     if (editForm) {
         editForm.addEventListener('submit', handleEditProduct);
     }
 
-  
+    // Cerrar modal con ESC
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeEditModal();
         }
     });
 
-    
+    // Cerrar modal haciendo clic fuera
     const modal = document.getElementById('editModal');
     if (modal) {
         modal.addEventListener('click', (e) => {
@@ -42,7 +42,7 @@ function setupEventListeners() {
     }
 }
 
-
+// Cargar productos
 async function loadProductos() {
     try {
         showLoadingInTable(true);
@@ -64,7 +64,7 @@ async function loadProductos() {
     }
 }
 
-
+// Mostrar productos en tabla
 function displayProductos(productosArray) {
     const tableBody = document.getElementById('productsTableBody');
     
@@ -99,23 +99,23 @@ function displayProductos(productosArray) {
                 <td style="text-align: center;">
                     <div class="action-buttons">
                         <button class="btn-action btn-edit" onclick="editProduct(${producto.id})" 
-                                title="Editar producto" data-tooltip="Editar">
+                                title="Editar producto">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                             </svg>
                             <span class="btn-label">Editar</span>
                         </button>
                         
-                        <button class="btn-action btn-stock" onclick="adjustStock(${producto.id}, '${producto.nombre.replace(/'/g, "\\'")}')" 
-                                title="Ajustar stock" data-tooltip="Ajustar Stock">
+                        <button class="btn-action btn-stock" onclick="adjustStock(${producto.id}, '${producto.nombre.replace(/'/g, "\\'")}', ${producto.stock})" 
+                                title="Ajustar stock">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                             </svg>
                             <span class="btn-label">Stock</span>
                         </button>
                         
-                        <button class="btn-action btn-delete" onclick="deleteProduct(${producto.id}, '${producto.nombre.replace(/'/g, "\\'")}')" 
-                                title="Eliminar producto" data-tooltip="Eliminar">
+                        <button class="btn-action btn-delete" onclick="deleteProduct(${producto.id}, '${producto.nombre.replace(/'/g, "\\'")}');" 
+                                title="Eliminar producto">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                             </svg>
@@ -138,7 +138,6 @@ function getStockStatus(stock) {
     return 'stock-alto';
 }
 
-
 function getStockBadge(status) {
     const badges = {
         'sin-stock': '<span class="stock-badge stock-none">Sin Stock</span>',
@@ -150,7 +149,7 @@ function getStockBadge(status) {
     return badges[status] || badges['stock-alto'];
 }
 
-
+// Mostrar/ocultar formulario de nuevo producto
 function showProductForm() {
     const form = document.getElementById('productForm');
     const addForm = document.getElementById('addProductForm');
@@ -173,7 +172,7 @@ function hideProductForm() {
     addForm.reset();
 }
 
-
+// Agregar producto
 async function handleAddProduct(event) {
     event.preventDefault();
     
@@ -196,7 +195,6 @@ async function handleAddProduct(event) {
             codigo_barras: formData.get('codigo_barras').trim() || null
         };
 
-       
         if (!producto.nombre) {
             throw new Error('El nombre del producto es requerido');
         }
@@ -205,7 +203,6 @@ async function handleAddProduct(event) {
             throw new Error('El precio debe ser mayor a 0');
         }
 
-       
         if (producto.codigo_barras) {
             const existeCodigoBarras = productos.some(p => 
                 p.codigo_barras === producto.codigo_barras
@@ -215,18 +212,17 @@ async function handleAddProduct(event) {
             }
         }
 
-       
         const result = await ipcRenderer.invoke('add-producto', producto);
         
         if (result) {
-            showNotification(`✅ Producto "${producto.nombre}" agregado exitosamente`, 'success');
+            showNotification(`Producto "${producto.nombre}" agregado exitosamente`, 'success');
             hideProductForm();
             await loadProductos();
         }
 
     } catch (error) {
         console.error('Error agregando producto:', error);
-        showNotification(`❌ ${error.message}`, 'error');
+        showNotification(error.message, 'error');
     } finally {
         loading.style.display = 'none';
         text.style.display = 'inline';
@@ -234,14 +230,17 @@ async function handleAddProduct(event) {
     }
 }
 
-
+// Editar producto
 function editProduct(id) {
     const producto = productos.find(p => p.id === id);
     if (!producto) {
-        showNotification('❌ Producto no encontrado', 'error');
+        showNotification('Producto no encontrado', 'error');
         return;
     }
 
+    console.log('Editando producto:', producto);
+
+    // Llenar formulario
     document.getElementById('editId').value = producto.id;
     document.getElementById('editNombre').value = producto.nombre;
     document.getElementById('editDescripcion').value = producto.descripcion || '';
@@ -250,7 +249,9 @@ function editProduct(id) {
     document.getElementById('editCategoria').value = producto.categoria || '';
     document.getElementById('editCodigoBarras').value = producto.codigo_barras || '';
 
+    // Mostrar modal
     const modal = document.getElementById('editModal');
+    modal.style.display = 'flex';
     modal.classList.add('show');
     
     setTimeout(() => {
@@ -258,7 +259,7 @@ function editProduct(id) {
     }, 100);
 }
 
-
+// Manejar edición de producto
 async function handleEditProduct(event) {
     event.preventDefault();
     
@@ -272,7 +273,8 @@ async function handleEditProduct(event) {
         submitBtn.disabled = true;
 
         const formData = new FormData(event.target);
-        const id = parseInt(formData.get('id'));
+        const id = parseInt(document.getElementById('editId').value);
+        
         const producto = {
             nombre: formData.get('nombre').trim(),
             descripcion: formData.get('descripcion').trim(),
@@ -282,7 +284,8 @@ async function handleEditProduct(event) {
             codigo_barras: formData.get('codigo_barras').trim() || null
         };
 
-        
+        console.log('Actualizando producto ID:', id, producto);
+
         if (!producto.nombre) {
             throw new Error('El nombre del producto es requerido');
         }
@@ -291,7 +294,6 @@ async function handleEditProduct(event) {
             throw new Error('El precio debe ser mayor a 0');
         }
 
-        
         if (producto.codigo_barras) {
             const existeCodigoBarras = productos.some(p => 
                 p.codigo_barras === producto.codigo_barras && p.id !== id
@@ -303,15 +305,19 @@ async function handleEditProduct(event) {
 
         const result = await ipcRenderer.invoke('update-producto', id, producto);
         
-        if (result) {
-            showNotification(`✅ Producto "${producto.nombre}" actualizado exitosamente`, 'success');
+        console.log('Resultado actualización:', result);
+        
+        if (result && result.changes > 0) {
+            showNotification(`Producto "${producto.nombre}" actualizado exitosamente`, 'success');
             closeEditModal();
             await loadProductos();
+        } else {
+            showNotification('No se pudo actualizar el producto', 'warning');
         }
 
     } catch (error) {
         console.error('Error actualizando producto:', error);
-        showNotification(`❌ ${error.message}`, 'error');
+        showNotification(error.message, 'error');
     } finally {
         loading.style.display = 'none';
         text.style.display = 'inline';
@@ -319,18 +325,16 @@ async function handleEditProduct(event) {
     }
 }
 
-
+// Cerrar modal de edición
 function closeEditModal() {
     const modal = document.getElementById('editModal');
+    modal.style.display = 'none';
     modal.classList.remove('show');
     document.getElementById('editProductForm').reset();
 }
 
-
-function adjustStock(id, nombre) {
-    const currentProduct = productos.find(p => p.id === id);
-    const currentStock = currentProduct ? currentProduct.stock : 0;
-    
+// Ajustar stock
+function adjustStock(id, nombre, currentStock) {
     const cantidad = prompt(
         `📦 Ajustar stock para: "${nombre}"\n` +
         `📊 Stock actual: ${currentStock} unidades\n\n` +
@@ -339,22 +343,21 @@ function adjustStock(id, nombre) {
         `Ingresa la cantidad:`
     );
     
-    if (cantidad === null) return; 
+    if (cantidad === null) return;
     
     const ajuste = parseInt(cantidad);
     if (isNaN(ajuste)) {
-        showNotification('❌ Cantidad inválida. Debe ser un número', 'error');
+        showNotification('Cantidad inválida. Debe ser un número', 'error');
         return;
     }
 
     if (ajuste === 0) {
-        showNotification('⚠️ No se realizó ningún cambio', 'warning');
+        showNotification('No se realizó ningún cambio', 'warning');
         return;
     }
 
-  
     if (currentStock + ajuste < 0) {
-        showNotification(`❌ No se puede reducir el stock por debajo de 0. Stock actual: ${currentStock}`, 'error');
+        showNotification(`No se puede reducir el stock por debajo de 0. Stock actual: ${currentStock}`, 'error');
         return;
     }
 
@@ -368,26 +371,24 @@ async function adjustStockConfirmed(id, ajuste, nombre) {
         if (result && result.changes > 0) {
             const accion = ajuste > 0 ? 'agregaron' : 'redujeron';
             const cantidad = Math.abs(ajuste);
-            showNotification(`✅ Se ${accion} ${cantidad} unidades al stock de "${nombre}"`, 'success');
+            showNotification(`Se ${accion} ${cantidad} unidades al stock de "${nombre}"`, 'success');
             await loadProductos();
         } else {
-            showNotification('❌ No se pudo actualizar el stock', 'error');
+            showNotification('No se pudo actualizar el stock', 'error');
         }
     } catch (error) {
         console.error('Error ajustando stock:', error);
-        showNotification('❌ Error ajustando stock', 'error');
+        showNotification('Error ajustando stock', 'error');
     }
 }
 
-
+// Eliminar producto
 function deleteProduct(id, nombre) {
     const confirmDelete = confirm(
         `⚠️ ELIMINAR PRODUCTO\n\n` +
         `¿Está seguro que desea eliminar el producto?\n\n` +
         `📦 "${nombre}"\n\n` +
-        `⚠️ Esta acción NO se puede deshacer\n` +
-        `✅ Presiona OK para confirmar\n` +
-        `❌ Presiona Cancelar para abortar`
+        `⚠️ Esta acción NO se puede deshacer`
     );
     
     if (confirmDelete) {
@@ -400,18 +401,18 @@ async function deleteProductConfirmed(id, nombre) {
         const result = await ipcRenderer.invoke('delete-producto', id);
         
         if (result && result.changes > 0) {
-            showNotification(`✅ Producto "${nombre}" eliminado exitosamente`, 'success');
+            showNotification(`Producto "${nombre}" eliminado exitosamente`, 'success');
             await loadProductos();
         } else {
-            showNotification('❌ No se pudo eliminar el producto', 'error');
+            showNotification('No se pudo eliminar el producto', 'error');
         }
     } catch (error) {
         console.error('Error eliminando producto:', error);
-        showNotification('❌ Error eliminando producto', 'error');
+        showNotification('Error eliminando producto', 'error');
     }
 }
 
-
+// Filtrar productos
 function filterProducts() {
     const searchTerm = document.getElementById('searchProduct').value.toLowerCase();
     const categoryFilter = document.getElementById('filterCategory').value;
@@ -445,7 +446,7 @@ function clearFilters() {
     document.getElementById('searchProduct').value = '';
     document.getElementById('filterCategory').value = '';
     displayProductos(productosOriginal);
-    showNotification('🗑️ Filtros limpiados', 'info');
+    showNotification('Filtros limpiados', 'info');
 }
 
 function navigateTo(page) {
@@ -461,7 +462,7 @@ function navigateTo(page) {
     }
 }
 
-
+// Utilidades
 function showLoadingInTable(show) {
     const tableBody = document.getElementById('productsTableBody');
     
@@ -481,16 +482,16 @@ function showNoProductsMessage() {
     const tableContainer = document.querySelector('.table-container');
     const noProductsDiv = document.getElementById('noProducts');
     
-    tableContainer.style.display = 'none';
-    noProductsDiv.style.display = 'block';
+    if (tableContainer) tableContainer.style.display = 'none';
+    if (noProductsDiv) noProductsDiv.style.display = 'block';
 }
 
 function hideNoProductsMessage() {
     const tableContainer = document.querySelector('.table-container');
     const noProductsDiv = document.getElementById('noProducts');
     
-    tableContainer.style.display = 'block';
-    noProductsDiv.style.display = 'none';
+    if (tableContainer) tableContainer.style.display = 'block';
+    if (noProductsDiv) noProductsDiv.style.display = 'none';
 }
 
 function showNotification(message, type = 'info') {
@@ -522,14 +523,14 @@ function showNotification(message, type = 'info') {
     }, 5000);
 }
 
-
+// Manejo de errores global
 window.addEventListener('error', (event) => {
     console.error('Error global:', event.error);
-    showNotification('❌ Ha ocurrido un error inesperado', 'error');
+    showNotification('Ha ocurrido un error inesperado', 'error');
 });
 
 window.addEventListener('unhandledrejection', (event) => {
     console.error('Error de promesa no manejada:', event.reason);
-    showNotification('❌ Error de conexión con la base de datos', 'error');
+    showNotification('Error de conexión con la base de datos', 'error');
     event.preventDefault();
 });

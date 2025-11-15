@@ -124,7 +124,7 @@ app.on('activate', () => {
 
 // Manejadores IPC para comunicación con renderer
 
-// Productos
+// ===== PRODUCTOS =====
 ipcMain.handle('get-productos', async () => {
   return await db.getProductos();
 });
@@ -141,7 +141,7 @@ ipcMain.handle('delete-producto', async (event, id) => {
   return await db.deleteProducto(id);
 });
 
-// Ventas
+// ===== VENTAS =====
 ipcMain.handle('get-ventas', async () => {
   return await db.getVentas();
 });
@@ -150,7 +150,7 @@ ipcMain.handle('add-venta', async (event, venta) => {
   return await db.addVenta(venta);
 });
 
-// Stock
+// ===== STOCK =====
 ipcMain.handle('get-stock-bajo', async (event, limite) => {
   return await db.getStockBajo(limite || 5);
 });
@@ -159,11 +159,59 @@ ipcMain.handle('update-stock', async (event, productId, cantidad) => {
   return await db.updateStock(productId, cantidad);
 });
 
-// Reportes
+// ===== REPORTES / ESTADÍSTICAS =====
 ipcMain.handle('get-ventas-del-dia', async () => {
   return await db.getVentasDelDia();
 });
 
 ipcMain.handle('get-producto-mas-vendido', async () => {
   return await db.getProductoMasVendido();
+});
+
+// Nuevo: Obtener ventas por rango de fechas (para reportes)
+ipcMain.handle('get-ventas-rango', async (event, startDate, endDate) => {
+  try {
+    const ventas = await db.getVentas();
+    return ventas.filter(venta => {
+      const ventaDate = new Date(venta.fecha).toISOString().split('T')[0];
+      return ventaDate >= startDate && ventaDate <= endDate;
+    });
+  } catch (error) {
+    console.error('Error obteniendo ventas por rango:', error);
+    throw error;
+  }
+});
+
+// Nuevo: Obtener resumen de ingresos (para reportes)
+ipcMain.handle('get-resumen-ingresos', async (event, startDate, endDate) => {
+  try {
+    const ventas = await db.getVentas();
+    const ventasEnRango = ventas.filter(venta => {
+      const ventaDate = new Date(venta.fecha).toISOString().split('T')[0];
+      return ventaDate >= startDate && ventaDate <= endDate;
+    });
+
+    const ingresoTotal = ventasEnRango.reduce((sum, v) => sum + v.total, 0);
+    const ingresoPromedio = ventasEnRango.length > 0 ? ingresoTotal / ventasEnRango.length : 0;
+
+    const resumenPorMetodo = {};
+    ventasEnRango.forEach(venta => {
+      const metodo = venta.metodo_pago || 'efectivo';
+      if (!resumenPorMetodo[metodo]) {
+        resumenPorMetodo[metodo] = { total: 0, cantidad: 0 };
+      }
+      resumenPorMetodo[metodo].total += venta.total;
+      resumenPorMetodo[metodo].cantidad += 1;
+    });
+
+    return {
+      ingresoTotal,
+      ingresoPromedio,
+      resumenPorMetodo,
+      totalVentas: ventasEnRango.length
+    };
+  } catch (error) {
+    console.error('Error obteniendo resumen de ingresos:', error);
+    throw error;
+  }
 });

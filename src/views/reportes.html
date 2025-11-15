@@ -5,48 +5,386 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reportes</title>
     <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .reports-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .report-card {
+            background: var(--glass-bg);
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius-lg);
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-light);
+        }
+
+        .report-card h3 {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: var(--spacing-lg);
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .report-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.95);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .list-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            max-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-md);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            transition: background-color 0.2s ease;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-item:hover {
+            background-color: rgba(102, 126, 234, 0.05);
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .item-detail {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .item-value {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .list-scroll {
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .list-empty {
+            text-align: center;
+            padding: var(--spacing-xl);
+            color: var(--text-muted);
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+
+        .btn-export {
+            flex: 1;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-export-csv {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+
+        .btn-export-csv:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(67, 233, 123, 0.4);
+        }
+
+        .btn-export-pdf {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-export-pdf:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.4);
+        }
+
+        .date-range {
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: flex-end;
+        }
+
+        .date-input {
+            flex: 1;
+        }
+
+        .date-input label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .date-input input {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius-sm);
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .date-input input:focus {
+            outline: none;
+            border-color: rgba(102, 126, 234, 0.6);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-refresh {
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-refresh:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .loading-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-xl);
+        }
+
+        .badge-stock {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-red {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+
+        .badge-yellow {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+
+        .badge-orange {
+            background: rgba(253, 126, 20, 0.2);
+            color: #fd7e14;
+        }
+
+        @media (max-width: 1024px) {
+            .reports-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .report-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .date-range {
+                flex-direction: column;
+            }
+
+            .btn-export {
+                min-width: auto;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1> Reportes</h1>
-            <p class="subtitle">Análisis y estadísticas</p>
+            <h1>📊 Reportes</h1>
+            <p class="subtitle">Análisis y estadísticas del sistema</p>
             <div style="margin-top: 15px;">
                 <button class="btn btn-secondary" onclick="navigateTo('index')">
-                    Volver al Inicio
+                    ⬅️ Volver al Inicio
                 </button>
             </div>
         </header>
 
         <main>
             <div class="form-container">
-                <h2>En Desarrollo</h2>
-                <p>Esta sección estará disponible en la próxima fase del desarrollo.</p>
-                <p><strong>Reportes planificados:</strong></p>
-                <ul>
-                    <li>Ventas del día</li>
-                    <li>Productos con stock bajo</li>
-                    <li>Producto más vendido</li>
-                    <li>Resumen de ingresos</li>
-                    <li>Exportación de reportes</li>
-                </ul>
+                <div class="date-range">
+                    <div class="date-input" style="flex: 1;">
+                        <label for="startDate">Fecha Inicio</label>
+                        <input type="date" id="startDate">
+                    </div>
+                    <div class="date-input" style="flex: 1;">
+                        <label for="endDate">Fecha Fin</label>
+                        <input type="date" id="endDate">
+                    </div>
+                    <button class="btn-refresh" onclick="loadReports()">
+                        🔄 Actualizar
+                    </button>
+                </div>
+
+                <div class="reports-container">
+                    <!-- Ventas del Día -->
+                    <div class="report-card">
+                        <h3>💰 Ventas del Día</h3>
+                        <div class="report-stats">
+                            <div class="stat-box">
+                                <div class="stat-label">Total de Ventas</div>
+                                <div class="stat-value" id="totalVentas">0</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label">Cantidad de Transacciones</div>
+                                <div class="stat-value" id="totalTransacciones">0</div>
+                            </div>
+                        </div>
+                        <div class="list-container">
+                            <div class="list-scroll" id="ventasList">
+                                <div class="list-empty">
+                                    <div class="loading"></div>
+                                    <p style="margin-top: 10px;">Cargando datos...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stock Bajo -->
+                    <div class="report-card">
+                        <h3>📦 Productos con Stock Bajo</h3>
+                        <div class="list-container">
+                            <div class="list-scroll" id="stockBajoList">
+                                <div class="list-empty">
+                                    <div class="loading"></div>
+                                    <p style="margin-top: 10px;">Cargando datos...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Producto Más Vendido -->
+                    <div class="report-card">
+                        <h3>⭐ Producto Más Vendido</h3>
+                        <div id="masVendidoContainer">
+                            <div class="list-empty">
+                                <div class="loading"></div>
+                                <p style="margin-top: 10px;">Cargando datos...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--  Ingresos -->
+                    <div class="report-card">
+                        <h3>💵 Resumen de Ingresos</h3>
+                        <div class="report-stats">
+                            <div class="stat-box">
+                                <div class="stat-label">Ingreso Total</div>
+                                <div class="stat-value" id="ingresoTotal">$0.00</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label">Ingreso Promedio</div>
+                                <div class="stat-value" id="ingresoPromedio">$0.00</div>
+                            </div>
+                        </div>
+                        <div class="list-container">
+                            <div class="list-scroll" id="resumenIngresos">
+                                <div class="list-empty">
+                                    <div class="loading"></div>
+                                    <p style="margin-top: 10px;">Cargando datos...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="report-card" style="margin-top: var(--spacing-lg); grid-column: 1/-1;">
+                    <h3>📤 Exportar Reportes</h3>
+                    <p style="color: rgba(255, 255, 255, 0.7); margin-bottom: var(--spacing-lg);">
+                        Descarga los reportes en tu formato preferido
+                    </p>
+                    <div class="export-buttons">
+                        <button class="btn-export btn-export-csv" onclick="exportCSV()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
+                            </svg>
+                            Exportar CSV
+                        </button>
+                        <button class="btn-export btn-export-pdf" onclick="exportPDF()">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
+                            </svg>
+                            Exportar PDF
+                        </button>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
 
-    <script>
-        function navigateTo(page) {
-            const pages = {
-                'index': './index.html',
-                'productos': './productos.html',
-                'ventas': './ventas.html',
-                'stock': './stock.html'
-            };
-
-            if (pages[page]) {
-                window.location.href = pages[page];
-            }
-        }
-    </script>
+    <script src="../js/reportes.js"></script>
 </body>
 </html>

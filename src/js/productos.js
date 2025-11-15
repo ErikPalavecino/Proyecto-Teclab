@@ -1,10 +1,10 @@
 const { ipcRenderer } = require('electron');
 
-// Variables globales
+
 let productos = [];
 let productosOriginal = [];
 
-// Inicialización
+
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('Página de productos cargada');
     await loadProductos();
@@ -12,26 +12,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function setupEventListeners() {
-    // Formulario de agregar
+   
     const addForm = document.getElementById('addProductForm');
     if (addForm) {
         addForm.addEventListener('submit', handleAddProduct);
     }
 
-    // Formulario de editar
     const editForm = document.getElementById('editProductForm');
     if (editForm) {
         editForm.addEventListener('submit', handleEditProduct);
     }
 
-    // Cerrar modal con ESC
+   
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeEditModal();
         }
     });
 
-    // Cerrar modal haciendo clic fuera
+
     const modal = document.getElementById('editModal');
     if (modal) {
         modal.addEventListener('click', (e) => {
@@ -42,7 +41,7 @@ function setupEventListeners() {
     }
 }
 
-// Cargar productos
+
 async function loadProductos() {
     try {
         showLoadingInTable(true);
@@ -64,7 +63,6 @@ async function loadProductos() {
     }
 }
 
-// Mostrar productos en tabla
 function displayProductos(productosArray) {
     const tableBody = document.getElementById('productsTableBody');
     
@@ -79,10 +77,9 @@ function displayProductos(productosArray) {
         return;
     }
 
-    // Limpiar el tbody
+   
     tableBody.innerHTML = '';
 
-    // Crear filas para cada producto
     productosArray.forEach(producto => {
         const stockStatus = getStockStatus(producto.stock);
         const stockBadge = getStockBadge(stockStatus);
@@ -126,7 +123,7 @@ function displayProductos(productosArray) {
             </td>
         `;
 
-        // Agregar event listeners a los botones
+        
         const btnEdit = row.querySelector('.btn-edit');
         const btnStock = row.querySelector('.btn-stock');
         const btnDelete = row.querySelector('.btn-delete');
@@ -159,7 +156,7 @@ function getStockBadge(status) {
     return badges[status] || badges['stock-alto'];
 }
 
-// Mostrar/ocultar formulario de nuevo producto
+
 function showProductForm() {
     const form = document.getElementById('productForm');
     const addForm = document.getElementById('addProductForm');
@@ -182,7 +179,7 @@ function hideProductForm() {
     addForm.reset();
 }
 
-// Agregar producto
+
 async function handleAddProduct(event) {
     event.preventDefault();
     
@@ -240,7 +237,7 @@ async function handleAddProduct(event) {
     }
 }
 
-// Editar producto
+
 function editProduct(id) {
     const producto = productos.find(p => p.id === id);
     if (!producto) {
@@ -250,7 +247,6 @@ function editProduct(id) {
 
     console.log('Editando producto:', producto);
 
-    // Llenar formulario
     document.getElementById('editId').value = producto.id;
     document.getElementById('editNombre').value = producto.nombre;
     document.getElementById('editDescripcion').value = producto.descripcion || '';
@@ -259,7 +255,7 @@ function editProduct(id) {
     document.getElementById('editCategoria').value = producto.categoria || '';
     document.getElementById('editCodigoBarras').value = producto.codigo_barras || '';
 
-    // Mostrar modal
+
     const modal = document.getElementById('editModal');
     modal.style.display = 'flex';
     modal.classList.add('show');
@@ -269,7 +265,7 @@ function editProduct(id) {
     }, 100);
 }
 
-// Manejar edición de producto
+
 async function handleEditProduct(event) {
     event.preventDefault();
     
@@ -335,7 +331,6 @@ async function handleEditProduct(event) {
     }
 }
 
-// Cerrar modal de edición
 function closeEditModal() {
     const modal = document.getElementById('editModal');
     modal.style.display = 'none';
@@ -343,7 +338,7 @@ function closeEditModal() {
     document.getElementById('editProductForm').reset();
 }
 
-// Ajustar stock
+
 function adjustStock(id, nombre, currentStock) {
     const cantidad = prompt(
         `📦 Ajustar stock para: "${nombre}"\n` +
@@ -392,7 +387,7 @@ async function adjustStockConfirmed(id, ajuste, nombre) {
     }
 }
 
-// Eliminar producto
+
 function deleteProduct(id, nombre) {
     const confirmDelete = confirm(
         `⚠️ ELIMINAR PRODUCTO\n\n` +
@@ -422,7 +417,7 @@ async function deleteProductConfirmed(id, nombre) {
     }
 }
 
-// Filtrar productos
+
 function filterProducts() {
     const searchTerm = document.getElementById('searchProduct').value.toLowerCase();
     const categoryFilter = document.getElementById('filterCategory').value;
@@ -472,7 +467,7 @@ function navigateTo(page) {
     }
 }
 
-// Utilidades
+
 function showLoadingInTable(show) {
     const tableBody = document.getElementById('productsTableBody');
     
@@ -533,7 +528,7 @@ function showNotification(message, type = 'info') {
     }, 5000);
 }
 
-// Manejo de errores global
+
 window.addEventListener('error', (event) => {
     console.error('Error global:', event.error);
     showNotification('Ha ocurrido un error inesperado', 'error');
